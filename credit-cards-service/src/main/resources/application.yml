@@ -1,14 +1,14 @@
 server:
-  port: ${PORT:8001}
+  port: ${PORT:8009}
 
 spring:
   application:
-    name: account-service
+    name: credit-cards-service
   output:
     ansi:
       enabled: ALWAYS
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/gdb_accounts_db}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/gdb_creditcards_db}
     username: ${DATABASE_USER:postgres}
     password: ${DATABASE_PASSWORD:java}
     driver-class-name: org.postgresql.Driver
@@ -25,29 +25,25 @@ spring:
     locations: classpath:db/migration
     validate-on-migrate: false
 
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
 logging:
   level:
     root: INFO
-    com.gdb.account: DEBUG
+    com.gdb.creditcards: DEBUG
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
   file:
-    name: logs/account-service.log
+    name: logs/credit-cards-service.log
     max-size: 10MB
     max-history: 30
 
-# External Service URLs
-external:
-  aadhar-service:
-    url: ${AADHAR_SERVICE_URL:http://localhost:8005}
-  company-service:
-    url: ${COMPANY_SERVICE_URL:http://localhost:8006}
-  notification-service:
-    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8007}
-  auth-service:
-    url: ${AUTH_SERVICE_URL:http://localhost:8004}
-
-# Swagger/OpenAPI Configuration
 springdoc:
   api-docs:
     path: /api/v1/api-docs
@@ -55,4 +51,9 @@ springdoc:
     path: /api/v1/docs
     operations-sorter: alpha
     tags-sorter: alpha
-  packages-to-scan: com.gdb.account.controller
+  packages-to-scan: com.gdb.creditcards.controller
+
+app:
+  services:
+    auth-url: ${AUTH_SERVICE_URL:http://localhost:8004}
+    accounts-url: ${ACCOUNTS_SERVICE_URL:http://localhost:8001}

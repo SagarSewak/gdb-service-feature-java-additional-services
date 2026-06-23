@@ -1,44 +1,61 @@
 package com.gdb.creditcards.controller;
 
 import com.gdb.creditcards.dto.CreditCardDto;
+import com.gdb.creditcards.dto.CreditCardTransactionDto;
+import com.gdb.creditcards.security.UserContextHolder;
+import com.gdb.creditcards.service.CreditCardService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/credit-cards")
+@RequiredArgsConstructor
 public class CreditCardController {
 
-    // Students: Inject your CreditCardService here
+    private final CreditCardService creditCardService;
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<CreditCardDto>> listUserCards(@PathVariable String userId) {
-        // Students: Implement logic to fetch user cards
-        return ResponseEntity.ok(Collections.emptyList());
+        return ResponseEntity.ok(creditCardService.getCardsByUserId(userId));
     }
 
     @PostMapping("/apply")
     public ResponseEntity<CreditCardDto> applyForCard(@RequestBody CreditCardDto application) {
-        // Students: Implement application validation and card generation
-        return ResponseEntity.status(501).build();
+        String userId = UserContextHolder.getContext().getUserId().toString();
+        CreditCardDto card = creditCardService.applyForCard(userId, application);
+        return ResponseEntity.ok(card);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CreditCardDto> getCardDetails(@PathVariable String id) {
-        // Students: Implement logic to fetch card details
-        return ResponseEntity.status(501).build();
+        return ResponseEntity.ok(creditCardService.getCardById(id));
     }
 
     @GetMapping("/{id}/transactions")
-    public ResponseEntity<?> getCardTransactions(@PathVariable String id) {
-        // Students: Implement logic to fetch transactions
-        return ResponseEntity.status(501).build();
+    public ResponseEntity<List<CreditCardTransactionDto>> getCardTransactions(
+            @PathVariable String id,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate) {
+        return ResponseEntity.ok(creditCardService.getTransactions(id, type, fromDate, toDate));
+    }
+
+    @Data
+    public static class BillPaymentRequest {
+        private Double amount;
+        private Long debitAccount;
     }
 
     @PostMapping("/{id}/pay")
-    public ResponseEntity<?> payCreditCardBill(@PathVariable String id, @RequestBody Object payment) {
-        // Students: Implement payment processing logic
-        return ResponseEntity.status(501).build();
+    public ResponseEntity<Map<String, Object>> payCreditCardBill(
+            @PathVariable String id,
+            @RequestBody BillPaymentRequest payment) {
+        Map<String, Object> response = creditCardService.payBill(id, payment.getAmount(), payment.getDebitAccount());
+        return ResponseEntity.ok(response);
     }
 }

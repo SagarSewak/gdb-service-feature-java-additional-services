@@ -11,7 +11,7 @@ spring:
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/gdb_auth_db}
     username: ${DATABASE_USER:postgres}
-    password: ${DATABASE_PASSWORD:anil}
+    password: ${DATABASE_PASSWORD:java}
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true

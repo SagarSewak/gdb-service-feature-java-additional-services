@@ -2,6 +2,7 @@ package com.gdb.creditcards.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +15,7 @@ public class CreditCard {
     private String id;
     
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
     
     @Column(name = "card_number")
     private String cardNumber;
@@ -23,19 +24,20 @@ public class CreditCard {
     private String cardType; // SILVER, GOLD, PLATINUM
     
     @Column(name = "credit_limit")
-    private Double creditLimit;
+    private BigDecimal creditLimit;
     
     @Column(name = "available_credit")
-    private Double availableCredit;
+    private BigDecimal availableCredit;
     
     @Column(name = "outstanding_amount")
-    private Double outstandingAmount;
+    private BigDecimal outstandingAmount;
     
     @Column(name = "minimum_due")
-    private Double minimumDue;
+    private BigDecimal minimumDue;
     
     @Column(name = "next_due_date")
     private LocalDate nextDueDate;
     
     private String status = "ACTIVE"; // ACTIVE, INACTIVE, BLOCKED
 }
+
