@@ -1,0 +1,16 @@
+Credit card should ask for name and mobile number  while applying and display it in the dashboard
+Credit card should be 16 numbers only - P1
+Credit card number expiry aswell as cvv should be displayed in the dashboard
+Silver tier card should be allowed if the applicant has equal to or more than 15000
+Gold tier card should be allowed if the applicant has equal to or more than 30000
+Platinum tier card shold be allowed if the applicant has equal to or more than 50000
+b.3. Transactions cannot be done more than the limit provided - P1
+b.4. cvv should be 3 digits only - P1
+b.5. Mobile numbers should be mapped to the credit card - P1
+
+Credit card should use Luhn's algorithm to generate a 16 digit number similar to Amex cards
+
+
+
+
+
