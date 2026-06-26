@@ -51,5 +51,7 @@ public class CreditCard {
     private String cvv;
 
     private String nickname;
+
+    private String pin;
 }
 

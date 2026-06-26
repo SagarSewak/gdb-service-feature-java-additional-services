@@ -41,7 +41,8 @@ export const creditCardService = {
         name: applicationData.name,
         mobileNumber: applicationData.mobileNumber,
         salary: Number(applicationData.salary),
-        nickname: applicationData.nickname
+        nickname: applicationData.nickname,
+        pin: applicationData.pin
       });
       return { 
         success: true, 
@@ -58,7 +59,8 @@ export const creditCardService = {
       const response = await creditCardsApi.post(`/api/v1/credit-cards/${cardId}/transactions`, {
         merchant: transactionData.merchant,
         amount: Number(transactionData.amount),
-        type: transactionData.type || 'Purchase'
+        type: transactionData.type || 'Purchase',
+        pin: transactionData.pin
       });
       return response.data;
     } catch (error) {

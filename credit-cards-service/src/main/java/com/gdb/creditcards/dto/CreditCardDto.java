@@ -21,4 +21,5 @@ public class CreditCardDto {
     private String cvv;
     private Double salary;
     private String nickname;
+    private String pin;
 }

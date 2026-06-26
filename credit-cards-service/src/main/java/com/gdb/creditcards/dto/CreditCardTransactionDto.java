@@ -19,4 +19,5 @@ public class CreditCardTransactionDto {
     private Double amount;
     private String type; // Purchase, Payment, Refund
     private String status; // Completed, Pending
+    private String pin;
 }

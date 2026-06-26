@@ -111,6 +111,11 @@ public class CreditCardServiceImpl implements CreditCardService {
         LocalDate expiry = LocalDate.now().plusYears(5);
         String expiryDate = String.format("%02d/%02d", expiry.getMonthValue(), expiry.getYear() % 100);
 
+        // Validate PIN
+        if (application.getPin() == null || !application.getPin().matches("^[0-9]{4}$")) {
+            throw new IllegalArgumentException("Card PIN must be exactly 4 digits");
+        }
+
         CreditCard card = new CreditCard();
         card.setUserId(Long.valueOf(userId));
         card.setCardNumber(cardNumber);
@@ -125,6 +130,7 @@ public class CreditCardServiceImpl implements CreditCardService {
         card.setMobileNumber(mobile);
         card.setExpiryDate(expiryDate);
         card.setCvv(cvv);
+        card.setPin(application.getPin());
         
         String nickname = application.getNickname();
         if (nickname == null || nickname.trim().isEmpty()) {
@@ -247,6 +253,11 @@ public class CreditCardServiceImpl implements CreditCardService {
 
         if (!"Active".equalsIgnoreCase(card.getStatus())) {
             throw new IllegalStateException("Credit card is not active");
+        }
+
+        // Verify PIN
+        if (transactionDto.getPin() == null || !transactionDto.getPin().equals(card.getPin())) {
+            throw new IllegalArgumentException("Invalid PIN");
         }
 
         BigDecimal amount = BigDecimal.valueOf(transactionDto.getAmount());

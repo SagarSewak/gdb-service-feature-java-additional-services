@@ -19,6 +19,7 @@ const CreditCardDashboard = () => {
   const [simMerchant, setSimMerchant] = useState('Amazon');
   const [simAmount, setSimAmount] = useState('');
   const [simulating, setSimulating] = useState(false);
+  const [simPin, setSimPin] = useState('');
   
   const navigate = useNavigate();
 
@@ -67,15 +68,21 @@ const CreditCardDashboard = () => {
       toast.error('Please enter a valid positive amount');
       return;
     }
+    if (!simPin || !/^\d{4}$/.test(simPin)) {
+      toast.error('Please enter a valid 4-digit PIN');
+      return;
+    }
     try {
       setSimulating(true);
       await creditCardService.createTransaction(selectedCardId, {
         merchant: simMerchant,
         amount: parseFloat(simAmount),
-        type: 'Purchase'
+        type: 'Purchase',
+        pin: simPin
       });
       toast.success('Simulation Successful! Purchase processed.');
       setSimAmount('');
+      setSimPin('');
       setShowSimulateModal(false);
       await loadCardData();
     } catch (error) {
@@ -385,6 +392,21 @@ const CreditCardDashboard = () => {
                 <p className="text-xs text-gray-400 mt-1">
                   Available credit limit is ₹{data?.availableCredit?.toLocaleString('en-IN') || '0'}.
                 </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Enter Card PIN
+                </label>
+                <input
+                  type="password"
+                  maxLength={4}
+                  required
+                  placeholder="••••"
+                  value={simPin}
+                  onChange={(e) => setSimPin(e.target.value.replace(/\D/g, ''))}
+                  className="block w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 px-3 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm font-mono tracking-[0.25em]"
+                />
               </div>
 
               <div className="flex gap-3 pt-4">

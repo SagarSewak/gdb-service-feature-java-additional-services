@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { creditCardService } from '../services/mockCreditCardService';
-import { Briefcase, IndianRupee, CreditCard, CheckCircle, ArrowLeft, ShieldCheck, Star, User, Phone } from 'lucide-react';
+import { Briefcase, IndianRupee, CreditCard, CheckCircle, ArrowLeft, ShieldCheck, Star, User, Phone, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ApplyCreditCard = () => {
@@ -13,7 +13,8 @@ const ApplyCreditCard = () => {
     employmentType: '',
     salary: '',
     cardType: '',
-    nickname: ''
+    nickname: '',
+    pin: ''
   });
   const [touched, setTouched] = useState({
     name: false,
@@ -21,7 +22,8 @@ const ApplyCreditCard = () => {
     employmentType: false,
     salary: false,
     cardType: false,
-    nickname: false
+    nickname: false,
+    pin: false
   });
 
   const validate = () => {
@@ -62,6 +64,12 @@ const ApplyCreditCard = () => {
       }
     }
 
+    if (!formData.pin) {
+      errors.pin = 'PIN is required';
+    } else if (!/^\d{4}$/.test(formData.pin)) {
+      errors.pin = 'PIN must be exactly 4 digits';
+    }
+
     return errors;
   };
 
@@ -76,7 +84,7 @@ const ApplyCreditCard = () => {
     e.preventDefault();
     if (!isValid) {
       toast.error('Please fix the validation errors');
-      setTouched({ name: true, mobileNumber: true, employmentType: true, salary: true, cardType: true });
+      setTouched({ name: true, mobileNumber: true, employmentType: true, salary: true, cardType: true, pin: true });
       return;
     }
 
@@ -227,6 +235,34 @@ const ApplyCreditCard = () => {
                       onBlur={() => handleBlur('nickname')}
                     />
                   </div>
+                </div>
+
+                {/* 4 Digit Card PIN */}
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">
+                    Set 4-Digit PIN <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Lock className={`h-5 w-5 transition-colors ${touched.pin ? (errors.pin ? 'text-red-400' : 'text-green-500') : 'text-gray-400 group-focus-within:text-primary-500'}`} />
+                    </div>
+                    <input
+                      type="password"
+                      maxLength={4}
+                      className={`pl-12 block w-full rounded-xl shadow-sm sm:text-sm py-3 transition-all duration-200 ${
+                        touched.pin && errors.pin
+                          ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
+                          : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300'
+                      }`}
+                      placeholder="e.g. 1234"
+                      value={formData.pin}
+                      onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
+                      onBlur={() => handleBlur('pin')}
+                    />
+                  </div>
+                  {touched.pin && errors.pin && (
+                    <p className="mt-2 text-sm text-red-500 font-medium animate-pulse">{errors.pin}</p>
+                  )}
                 </div>
               </div>
             </div>
