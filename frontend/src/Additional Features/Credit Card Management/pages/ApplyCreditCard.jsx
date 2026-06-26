@@ -12,14 +12,16 @@ const ApplyCreditCard = () => {
     mobileNumber: '',
     employmentType: '',
     salary: '',
-    cardType: ''
+    cardType: '',
+    nickname: ''
   });
   const [touched, setTouched] = useState({
     name: false,
     mobileNumber: false,
     employmentType: false,
     salary: false,
-    cardType: false
+    cardType: false,
+    nickname: false
   });
 
   const validate = () => {
@@ -152,7 +154,7 @@ const ApplyCreditCard = () => {
                 <h2 className="text-lg font-semibold text-gray-800">Personal Details</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Full Name */}
                 <div className="group">
                   <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">
@@ -205,6 +207,26 @@ const ApplyCreditCard = () => {
                   {touched.mobileNumber && errors.mobileNumber && (
                     <p className="mt-2 text-sm text-red-500 font-medium animate-pulse">{errors.mobileNumber}</p>
                   )}
+                </div>
+
+                {/* Card Nickname */}
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">
+                    Card Nickname
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <CreditCard className={`h-5 w-5 transition-colors ${touched.nickname ? 'text-green-500' : 'text-gray-400 group-focus-within:text-primary-500'}`} />
+                    </div>
+                    <input
+                      type="text"
+                      className="pl-12 block w-full rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 shadow-sm sm:text-sm py-3 transition-all duration-200"
+                      placeholder="e.g. Shopping Card, Personal"
+                      value={formData.nickname}
+                      onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+                      onBlur={() => handleBlur('nickname')}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

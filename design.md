@@ -62,8 +62,17 @@ The card application wizard ([`ApplyCreditCard.jsx`](file:///Users/sagarsewak/Do
 1.  **Personal & Identity Details**:
     *   *Full Name*: Validated to prevent blank names.
     *   *Mobile Number*: Map validation requires 10 to 15 digits (using Regex checking).
+    *   *Card Nickname*: Optional custom identifier (e.g., "Daily Spends") which is persisted and displayed on both the dashboard selector dropdown and the card widget face.
 2.  **Tier Selection & Professional Credentials**:
     *   *Salary Field & Dynamic Alerting*: Validates user income in real-time against selected tier thresholds. If a user selects a Platinum card but enters a salary under ₹50,000, they receive immediate inline validation feedback.
+
+---
+
+## 3.1 Visual Sizing & Overflow Adjustments
+To prevent layout breaks when screen width is constrained (such as when the portal's sidebar is expanded):
+*   **Card Number Font Sizing**: The font size of the card numbers on `CreditCardWidget.jsx` is scaled responsively (`text-[12px] xs:text-[14px] sm:text-[16px] lg:text-lg`) to prevent trailing digit cutoffs.
+*   **12-Column Grid Alignment**: Expires and CVV indicators align correctly without wrapping using a grid-based horizontal layout rather than flexing inline.
+*   **Header Button Sizing**: The credit card dropdown, Simulate Purchase, and Apply New Card actions are laid out in a grid containing exactly equal widths on non-mobile screens.
 
 ---
 

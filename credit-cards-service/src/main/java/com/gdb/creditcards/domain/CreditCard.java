@@ -49,5 +49,7 @@ public class CreditCard {
     private String expiryDate;
 
     private String cvv;
+
+    private String nickname;
 }
 

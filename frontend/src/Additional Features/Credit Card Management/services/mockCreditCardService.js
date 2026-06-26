@@ -40,7 +40,8 @@ export const creditCardService = {
         cardType: applicationData.cardType,
         name: applicationData.name,
         mobileNumber: applicationData.mobileNumber,
-        salary: Number(applicationData.salary)
+        salary: Number(applicationData.salary),
+        nickname: applicationData.nickname
       });
       return { 
         success: true, 

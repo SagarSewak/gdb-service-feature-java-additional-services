@@ -125,6 +125,12 @@ public class CreditCardServiceImpl implements CreditCardService {
         card.setMobileNumber(mobile);
         card.setExpiryDate(expiryDate);
         card.setCvv(cvv);
+        
+        String nickname = application.getNickname();
+        if (nickname == null || nickname.trim().isEmpty()) {
+            nickname = type + " Card";
+        }
+        card.setNickname(nickname.trim());
 
         CreditCard savedCard = creditCardRepository.save(card);
         log.info("Successfully generated credit card: {}", savedCard.getId());
@@ -290,6 +296,7 @@ public class CreditCardServiceImpl implements CreditCardService {
         dto.setMobileNumber(card.getMobileNumber());
         dto.setExpiryDate(card.getExpiryDate());
         dto.setCvv(card.getCvv());
+        dto.setNickname(card.getNickname());
         return dto;
     }
 

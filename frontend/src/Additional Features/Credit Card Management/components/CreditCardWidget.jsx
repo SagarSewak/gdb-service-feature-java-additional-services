@@ -27,16 +27,16 @@ const CreditCardWidget = ({ data }) => {
       
       <div className="relative z-10 flex flex-col h-full justify-between gap-6">
         <div className="flex justify-between items-start">
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold opacity-80 uppercase tracking-wider">{data.cardType}</span>
-            <span className="text-xs opacity-75 mt-1">Global Digital Bank</span>
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-bold opacity-95 uppercase tracking-wider truncate">{data.nickname || data.cardType}</span>
+            <span className="text-[11px] opacity-80 mt-0.5">{data.nickname ? `${data.cardType} Card` : 'Global Digital Bank'}</span>
           </div>
-          <Wifi className="w-6 h-6 transform rotate-90 opacity-80" />
+          <Wifi className="w-6 h-6 transform rotate-90 opacity-80 flex-shrink-0" />
         </div>
 
         <div className="flex items-center gap-4">
           <div className="w-12 h-8 bg-yellow-200 rounded-md opacity-80 flex-shrink-0"></div>
-          <div className="tracking-[0.1em] sm:tracking-[0.15em] font-mono text-[14px] xs:text-[16px] sm:text-lg lg:text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+          <div className="tracking-[0.08em] sm:tracking-[0.12em] font-mono text-[12px] xs:text-[14px] sm:text-[16px] lg:text-lg font-medium whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
             {data.cardNumber && data.cardNumber.includes(' ') 
               ? data.cardNumber 
               : (data.cardNumber ? data.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ') : '')}

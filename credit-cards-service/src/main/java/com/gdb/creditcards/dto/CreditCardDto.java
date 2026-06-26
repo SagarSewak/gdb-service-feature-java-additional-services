@@ -20,4 +20,5 @@ public class CreditCardDto {
     private String expiryDate;
     private String cvv;
     private Double salary;
+    private String nickname;
 }

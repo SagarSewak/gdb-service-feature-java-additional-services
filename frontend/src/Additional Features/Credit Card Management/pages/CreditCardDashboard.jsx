@@ -137,7 +137,7 @@ const CreditCardDashboard = () => {
               >
                 {cards.map(c => (
                   <option key={c.id} value={c.id}>
-                    {c.cardType} ({c.cardNumber.slice(-4)})
+                    {c.nickname || c.cardType} ({c.cardNumber.slice(-4)})
                   </option>
                 ))}
               </select>
@@ -250,6 +250,10 @@ const CreditCardDashboard = () => {
                 <div>
                   <p className="text-sm text-gray-500">CVV Code</p>
                   <p className="text-lg font-semibold text-gray-800">{data.cvv || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Card Nickname</p>
+                  <p className="text-lg font-semibold text-gray-800">{data.nickname || 'N/A'}</p>
                 </div>
               </div>
             </div>
