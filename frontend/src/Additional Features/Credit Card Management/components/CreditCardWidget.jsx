@@ -35,24 +35,32 @@ const CreditCardWidget = ({ data }) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-12 h-8 bg-yellow-200 rounded-md opacity-80"></div>
-          <div className="tracking-[0.2em] font-mono text-lg lg:text-xl font-medium">
-            {data.cardNumber}
+          <div className="w-12 h-8 bg-yellow-200 rounded-md opacity-80 flex-shrink-0"></div>
+          <div className="tracking-[0.1em] sm:tracking-[0.15em] font-mono text-[14px] xs:text-[16px] sm:text-lg lg:text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+            {data.cardNumber && data.cardNumber.includes(' ') 
+              ? data.cardNumber 
+              : (data.cardNumber ? data.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ') : '')}
           </div>
         </div>
 
-        <div className="flex justify-between items-end">
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase opacity-75 tracking-wider">Card Holder</span>
-            <span className="font-medium tracking-wide">{data.name ? data.name.toUpperCase() : 'CARDHOLDER NAME'}</span>
+        <div className="grid grid-cols-12 gap-1 items-end mt-4">
+          <div className="col-span-6 flex flex-col min-w-0">
+            <span className="text-[9px] uppercase opacity-75 tracking-wider truncate">Card Holder</span>
+            <span className="font-semibold tracking-wide text-xs sm:text-sm truncate">
+              {data.name ? data.name.toUpperCase() : 'CARDHOLDER NAME'}
+            </span>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-[10px] uppercase opacity-75 tracking-wider">Expires</span>
-            <span className="font-medium tracking-wide">{data.expiryDate || 'MM/YY'}</span>
+          <div className="col-span-3 flex flex-col items-center min-w-0">
+            <span className="text-[9px] uppercase opacity-75 tracking-wider truncate">Expires</span>
+            <span className="font-semibold tracking-wide text-xs sm:text-sm whitespace-nowrap">
+              {data.expiryDate || 'MM/YY'}
+            </span>
           </div>
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] uppercase opacity-75 tracking-wider">CVV</span>
-            <span className="font-medium tracking-wide">{data.cvv || '***'}</span>
+          <div className="col-span-3 flex flex-col items-end min-w-0">
+            <span className="text-[9px] uppercase opacity-75 tracking-wider truncate">CVV</span>
+            <span className="font-semibold tracking-wide text-xs sm:text-sm whitespace-nowrap">
+              {data.cvv || '***'}
+            </span>
           </div>
         </div>
       </div>

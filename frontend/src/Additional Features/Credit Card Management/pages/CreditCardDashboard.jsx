@@ -123,17 +123,17 @@ const CreditCardDashboard = () => {
           <p className="text-gray-500">Manage your credit card and view statements</p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
           {/* Card Selector Dropdown */}
           {cards.length > 0 && (
-            <div className="relative">
+            <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <CreditCard className="h-4 w-4 text-gray-400" />
               </div>
               <select 
                 value={selectedCardId}
                 onChange={(e) => setSelectedCardId(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 text-gray-700 py-2.5 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-medium cursor-pointer"
+                className="appearance-none bg-white border border-gray-300 text-gray-700 py-2.5 pl-10 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-medium cursor-pointer w-full text-center"
               >
                 {cards.map(c => (
                   <option key={c.id} value={c.id}>
@@ -147,11 +147,10 @@ const CreditCardDashboard = () => {
             </div>
           )}
 
-
           {cards.length > 0 && (
             <button
               onClick={() => setShowSimulateModal(true)}
-              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-lg shadow-sm font-medium flex items-center gap-2 transition-all"
+              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-lg shadow-sm font-medium flex items-center justify-center gap-2 transition-all w-full"
             >
               <Receipt className="w-4 h-4" />
               Simulate Purchase
@@ -160,7 +159,7 @@ const CreditCardDashboard = () => {
 
           <button
             onClick={() => navigate('/credit-cards/apply')}
-            className="btn-primary flex items-center gap-2 shadow-sm"
+            className="btn-primary flex items-center justify-center gap-2 shadow-sm w-full py-2.5"
           >
             <CreditCard className="w-4 h-4" />
             Apply New Card
