@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { creditCardService } from '../services/mockCreditCardService';
-import { Briefcase, IndianRupee, CreditCard, CheckCircle, ArrowLeft, ShieldCheck, Star } from 'lucide-react';
+import { Briefcase, IndianRupee, CreditCard, CheckCircle, ArrowLeft, ShieldCheck, Star, User, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ApplyCreditCard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    name: '',
+    mobileNumber: '',
     employmentType: '',
     salary: '',
     cardType: ''
   });
   const [touched, setTouched] = useState({
+    name: false,
+    mobileNumber: false,
     employmentType: false,
     salary: false,
     cardType: false
@@ -20,6 +24,17 @@ const ApplyCreditCard = () => {
 
   const validate = () => {
     const errors = {};
+    
+    if (!formData.name || !formData.name.trim()) {
+      errors.name = 'Full Name is required';
+    }
+
+    if (!formData.mobileNumber) {
+      errors.mobileNumber = 'Mobile Number is required';
+    } else if (!/^\d{10,15}$/.test(formData.mobileNumber)) {
+      errors.mobileNumber = 'Mobile Number must be 10 to 15 digits';
+    }
+
     if (!formData.employmentType) errors.employmentType = 'Employment Type is required';
     
     if (!formData.salary) {
@@ -32,7 +47,18 @@ const ApplyCreditCard = () => {
       errors.salary = 'Salary maximum 8 digits allowed';
     }
 
-    if (!formData.cardType) errors.cardType = 'Please select a card type';
+    if (!formData.cardType) {
+      errors.cardType = 'Please select a card type';
+    } else if (formData.salary && /^\d+$/.test(formData.salary)) {
+      const salVal = parseInt(formData.salary);
+      if (formData.cardType === 'Silver' && salVal < 15000) {
+        errors.salary = 'Silver tier requires a salary of at least ₹15,000';
+      } else if (formData.cardType === 'Gold' && salVal < 30000) {
+        errors.salary = 'Gold tier requires a salary of at least ₹30,000';
+      } else if (formData.cardType === 'Platinum' && salVal < 50000) {
+        errors.salary = 'Platinum tier requires a salary of at least ₹50,000';
+      }
+    }
 
     return errors;
   };
@@ -48,7 +74,7 @@ const ApplyCreditCard = () => {
     e.preventDefault();
     if (!isValid) {
       toast.error('Please fix the validation errors');
-      setTouched({ employmentType: true, salary: true, cardType: true });
+      setTouched({ name: true, mobileNumber: true, employmentType: true, salary: true, cardType: true });
       return;
     }
 
@@ -119,6 +145,70 @@ const ApplyCreditCard = () => {
         <div className="p-8 sm:p-10 relative z-10">
           <form onSubmit={handleSubmit} className="space-y-10">
             
+            {/* Section 0: Personal Details */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
+                <User className="w-5 h-5 text-primary-600" />
+                <h2 className="text-lg font-semibold text-gray-800">Personal Details</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Full Name */}
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <User className={`h-5 w-5 transition-colors ${touched.name ? (errors.name ? 'text-red-400' : 'text-green-500') : 'text-gray-400 group-focus-within:text-primary-500'}`} />
+                    </div>
+                    <input
+                      type="text"
+                      className={`pl-12 block w-full rounded-xl shadow-sm sm:text-sm py-3 transition-all duration-200 ${
+                        touched.name && errors.name
+                          ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
+                          : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300'
+                      }`}
+                      placeholder="e.g. John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onBlur={() => handleBlur('name')}
+                    />
+                  </div>
+                  {touched.name && errors.name && (
+                    <p className="mt-2 text-sm text-red-500 font-medium animate-pulse">{errors.name}</p>
+                  )}
+                </div>
+
+                {/* Mobile Number */}
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">
+                    Mobile Number <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Phone className={`h-5 w-5 transition-colors ${touched.mobileNumber ? (errors.mobileNumber ? 'text-red-400' : 'text-green-500') : 'text-gray-400 group-focus-within:text-primary-500'}`} />
+                    </div>
+                    <input
+                      type="text"
+                      className={`pl-12 block w-full rounded-xl shadow-sm sm:text-sm py-3 transition-all duration-200 ${
+                        touched.mobileNumber && errors.mobileNumber
+                          ? 'border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500'
+                          : 'border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300'
+                      }`}
+                      placeholder="e.g. 9876543210"
+                      value={formData.mobileNumber}
+                      onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
+                      onBlur={() => handleBlur('mobileNumber')}
+                    />
+                  </div>
+                  {touched.mobileNumber && errors.mobileNumber && (
+                    <p className="mt-2 text-sm text-red-500 font-medium animate-pulse">{errors.mobileNumber}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Section 1: Professional Details */}
             <div className="space-y-6">
               <div className="flex items-center gap-2 border-b border-gray-100 pb-2">

@@ -37,7 +37,10 @@ export const creditCardService = {
   applyForCard: async (applicationData) => {
     try {
       const response = await creditCardsApi.post('/api/v1/credit-cards/apply', {
-        cardType: applicationData.cardType
+        cardType: applicationData.cardType,
+        name: applicationData.name,
+        mobileNumber: applicationData.mobileNumber,
+        salary: Number(applicationData.salary)
       });
       return { 
         success: true, 
@@ -46,6 +49,19 @@ export const creditCardService = {
       };
     } catch (error) {
       throw new Error(error.response?.data?.message || error.message || 'Application failed');
+    }
+  },
+
+  createTransaction: async (cardId, transactionData) => {
+    try {
+      const response = await creditCardsApi.post(`/api/v1/credit-cards/${cardId}/transactions`, {
+        merchant: transactionData.merchant,
+        amount: Number(transactionData.amount),
+        type: transactionData.type || 'Purchase'
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message || 'Transaction failed');
     }
   },
 

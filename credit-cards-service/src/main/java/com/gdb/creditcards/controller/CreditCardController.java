@@ -45,6 +45,13 @@ public class CreditCardController {
         return ResponseEntity.ok(creditCardService.getTransactions(id, type, fromDate, toDate));
     }
 
+    @PostMapping("/{id}/transactions")
+    public ResponseEntity<CreditCardTransactionDto> createTransaction(
+            @PathVariable String id,
+            @RequestBody CreditCardTransactionDto transactionDto) {
+        return ResponseEntity.ok(creditCardService.createTransaction(id, transactionDto));
+    }
+
     @Data
     public static class BillPaymentRequest {
         private Double amount;

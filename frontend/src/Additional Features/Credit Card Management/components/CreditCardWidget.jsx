@@ -44,11 +44,15 @@ const CreditCardWidget = ({ data }) => {
         <div className="flex justify-between items-end">
           <div className="flex flex-col">
             <span className="text-[10px] uppercase opacity-75 tracking-wider">Card Holder</span>
-            <span className="font-medium tracking-wide">CARDHOLDER NAME</span>
+            <span className="font-medium tracking-wide">{data.name ? data.name.toUpperCase() : 'CARDHOLDER NAME'}</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] uppercase opacity-75 tracking-wider">Expires</span>
+            <span className="font-medium tracking-wide">{data.expiryDate || 'MM/YY'}</span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-[10px] uppercase opacity-75 tracking-wider">Status</span>
-            <span className="font-medium tracking-wide">{data.status}</span>
+            <span className="text-[10px] uppercase opacity-75 tracking-wider">CVV</span>
+            <span className="font-medium tracking-wide">{data.cvv || '***'}</span>
           </div>
         </div>
       </div>

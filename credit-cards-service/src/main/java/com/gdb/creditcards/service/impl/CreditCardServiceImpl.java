@@ -60,21 +60,56 @@ public class CreditCardServiceImpl implements CreditCardService {
             throw new IllegalArgumentException("Card type is required");
         }
 
-        BigDecimal limit;
+        if (application.getName() == null || application.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Name is required");
+        }
+
+        if (application.getMobileNumber() == null || application.getMobileNumber().trim().isEmpty()) {
+            throw new IllegalArgumentException("Mobile number is required");
+        }
+
+        // Validate mobile number: P1 - Mobile numbers should be mapped to the credit card
+        String mobile = application.getMobileNumber().trim();
+        if (!mobile.matches("^[0-9]{10,15}$")) {
+            throw new IllegalArgumentException("Mobile number must be between 10 and 15 digits");
+        }
+
+        // Validate salary limits based on card type
         String type = application.getCardType().trim();
+        Double salary = application.getSalary();
+        if (salary == null) {
+            throw new IllegalArgumentException("Salary is required for validation");
+        }
+
+        BigDecimal limit;
         if (type.equalsIgnoreCase("Platinum")) {
+            if (salary < 50000.0) {
+                throw new IllegalArgumentException("Platinum tier card requires a salary of at least ₹50,000");
+            }
             limit = BigDecimal.valueOf(500000.0);
         } else if (type.equalsIgnoreCase("Gold")) {
+            if (salary < 30000.0) {
+                throw new IllegalArgumentException("Gold tier card requires a salary of at least ₹30,000");
+            }
             limit = BigDecimal.valueOf(250000.0);
         } else {
+            if (salary < 15000.0) {
+                throw new IllegalArgumentException("Silver tier card requires a salary of at least ₹15,000");
+            }
             limit = BigDecimal.valueOf(100000.0);
             type = "Silver"; // Normalise
         }
 
-        // Generate a mock credit card number ending with 4 random digits
+        // Generate 16 digit number using Luhn's algorithm similar to Amex cards (starts with 37)
+        String cardNumber = generateLuhnAmex16();
+
+        // Generate 3 digit CVV
         Random random = new Random();
-        int suffix = 1000 + random.nextInt(9000);
-        String cardNumber = "**** **** **** " + suffix;
+        String cvv = String.format("%03d", random.nextInt(1000));
+
+        // Generate expiry date in MM/YY format (5 years from now)
+        LocalDate expiry = LocalDate.now().plusYears(5);
+        String expiryDate = String.format("%02d/%02d", expiry.getMonthValue(), expiry.getYear() % 100);
 
         CreditCard card = new CreditCard();
         card.setUserId(Long.valueOf(userId));
@@ -86,10 +121,36 @@ public class CreditCardServiceImpl implements CreditCardService {
         card.setMinimumDue(BigDecimal.ZERO);
         card.setNextDueDate(LocalDate.now().plusDays(30));
         card.setStatus("Active");
+        card.setName(application.getName().trim());
+        card.setMobileNumber(mobile);
+        card.setExpiryDate(expiryDate);
+        card.setCvv(cvv);
 
         CreditCard savedCard = creditCardRepository.save(card);
         log.info("Successfully generated credit card: {}", savedCard.getId());
         return convertToDto(savedCard);
+    }
+
+    private String generateLuhnAmex16() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder("37");
+        while (sb.length() < 15) {
+            sb.append(random.nextInt(10));
+        }
+        int sum = 0;
+        for (int i = 0; i < 15; i++) {
+            int digit = Character.getNumericValue(sb.charAt(i));
+            if (i % 2 == 0) { // even index left-to-right (0, 2, ..., 14)
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            sum += digit;
+        }
+        int checkDigit = (10 - (sum % 10)) % 10;
+        sb.append(checkDigit);
+        return sb.toString();
     }
 
     @Override
@@ -171,6 +232,48 @@ public class CreditCardServiceImpl implements CreditCardService {
         return result;
     }
 
+    @Override
+    @Transactional
+    public CreditCardTransactionDto createTransaction(String cardId, CreditCardTransactionDto transactionDto) {
+        log.info("Creating transaction for card ID: {}, amount: {}", cardId, transactionDto.getAmount());
+        CreditCard card = creditCardRepository.findById(cardId)
+                .orElseThrow(() -> new NoSuchElementException("Credit card not found with ID: " + cardId));
+
+        if (!"Active".equalsIgnoreCase(card.getStatus())) {
+            throw new IllegalStateException("Credit card is not active");
+        }
+
+        BigDecimal amount = BigDecimal.valueOf(transactionDto.getAmount());
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Transaction amount must be greater than zero");
+        }
+
+        // Validate Limit: "b.3. Transactions cannot be done more than the limit provided - P1"
+        if (amount.compareTo(card.getAvailableCredit()) > 0) {
+            throw new IllegalArgumentException("Transaction limit exceeded. Available credit is ₹" + card.getAvailableCredit());
+        }
+
+        // Deduct available credit and add to outstanding amount
+        card.setAvailableCredit(card.getAvailableCredit().subtract(amount));
+        card.setOutstandingAmount(card.getOutstandingAmount().add(amount));
+        // Minimum due could be updated, let's say 5% of outstanding amount
+        card.setMinimumDue(card.getOutstandingAmount().multiply(BigDecimal.valueOf(0.05)));
+
+        creditCardRepository.save(card);
+
+        CreditCardTransaction transaction = CreditCardTransaction.builder()
+                .cardId(cardId)
+                .date(LocalDateTime.now())
+                .merchant(transactionDto.getMerchant() != null ? transactionDto.getMerchant() : "Online Purchase")
+                .amount(amount)
+                .type(transactionDto.getType() != null ? transactionDto.getType() : "Purchase")
+                .status("Completed")
+                .build();
+
+        CreditCardTransaction savedTxn = creditCardTransactionRepository.save(transaction);
+        return convertTxnToDto(savedTxn);
+    }
+
     private CreditCardDto convertToDto(CreditCard card) {
         CreditCardDto dto = new CreditCardDto();
         dto.setId(card.getId());
@@ -183,6 +286,10 @@ public class CreditCardServiceImpl implements CreditCardService {
         dto.setMinimumDue(card.getMinimumDue() != null ? card.getMinimumDue().doubleValue() : null);
         dto.setNextDueDate(card.getNextDueDate());
         dto.setStatus(card.getStatus());
+        dto.setName(card.getName());
+        dto.setMobileNumber(card.getMobileNumber());
+        dto.setExpiryDate(card.getExpiryDate());
+        dto.setCvv(card.getCvv());
         return dto;
     }
 

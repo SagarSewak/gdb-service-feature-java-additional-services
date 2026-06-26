@@ -12,4 +12,5 @@ public interface CreditCardService {
     CreditCardDto applyForCard(String userId, CreditCardDto application);
     List<CreditCardTransactionDto> getTransactions(String cardId, String type, String fromDate, String toDate);
     Map<String, Object> payBill(String cardId, Double amount, Long debitAccount);
+    CreditCardTransactionDto createTransaction(String cardId, CreditCardTransactionDto transactionDto);
 }

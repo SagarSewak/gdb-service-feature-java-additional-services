@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS credit_cards (
     minimum_due NUMERIC(15, 2) NOT NULL CHECK (minimum_due >= 0),
     next_due_date DATE,
     status VARCHAR(20) NOT NULL DEFAULT 'Active',
+    name VARCHAR(100),
+    mobile_number VARCHAR(15),
+    expiry_date VARCHAR(5),
+    cvv VARCHAR(3),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -36,8 +40,8 @@ CREATE INDEX IF NOT EXISTS idx_credit_card_transactions_card_id ON credit_card_t
 CREATE INDEX IF NOT EXISTS idx_credit_card_transactions_date ON credit_card_transactions(date);
 
 -- 4. Insert Default Seed Card for Testing
-INSERT INTO credit_cards (id, user_id, card_number, card_type, credit_limit, available_credit, outstanding_amount, minimum_due, next_due_date, status)
-VALUES ('CARD_1001', 1, '**** **** **** 4589', 'Platinum', 500000.00, 125000.00, 375000.00, 18750.00, CURRENT_DATE + INTERVAL '5 days', 'Active')
+INSERT INTO credit_cards (id, user_id, card_number, card_type, credit_limit, available_credit, outstanding_amount, minimum_due, next_due_date, status, name, mobile_number, expiry_date, cvv)
+VALUES ('CARD_1001', 1, '3782822463100052', 'Platinum', 500000.00, 125000.00, 375000.00, 18750.00, CURRENT_DATE + INTERVAL '5 days', 'Active', 'Admin User', '9876543210', '12/30', '123')
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Insert Default Seed Transactions

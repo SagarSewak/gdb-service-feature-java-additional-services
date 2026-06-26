@@ -15,4 +15,9 @@ public class CreditCardDto {
     private Double minimumDue;
     private LocalDate nextDueDate;
     private String status;
+    private String name;
+    private String mobileNumber;
+    private String expiryDate;
+    private String cvv;
+    private Double salary;
 }

@@ -39,5 +39,15 @@ public class CreditCard {
     private LocalDate nextDueDate;
     
     private String status = "ACTIVE"; // ACTIVE, INACTIVE, BLOCKED
+
+    private String name;
+
+    @Column(name = "mobile_number")
+    private String mobileNumber;
+
+    @Column(name = "expiry_date")
+    private String expiryDate;
+
+    private String cvv;
 }
 

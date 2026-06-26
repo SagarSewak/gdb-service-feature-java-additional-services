@@ -15,6 +15,11 @@ const CreditCardDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('All');
   
+  const [showSimulateModal, setShowSimulateModal] = useState(false);
+  const [simMerchant, setSimMerchant] = useState('Amazon');
+  const [simAmount, setSimAmount] = useState('');
+  const [simulating, setSimulating] = useState(false);
+  
   const navigate = useNavigate();
 
   // Load all cards initially
@@ -38,26 +43,50 @@ const CreditCardDashboard = () => {
     fetchInitialData();
   }, []);
 
+  const loadCardData = async () => {
+    if (!selectedCardId) return;
+    try {
+      setLoading(true);
+      const cardData = await creditCardService.getDashboardData(selectedCardId);
+      setData(cardData);
+      
+      if (cardData) {
+        const txns = await creditCardService.getTransactions(null, selectedCardId);
+        setRecentTransactions(txns.slice(0, 5));
+      }
+    } catch (error) {
+      toast.error('Unable to Load Card Details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSimulateTransaction = async (e) => {
+    e.preventDefault();
+    if (!simAmount || isNaN(simAmount) || parseFloat(simAmount) <= 0) {
+      toast.error('Please enter a valid positive amount');
+      return;
+    }
+    try {
+      setSimulating(true);
+      await creditCardService.createTransaction(selectedCardId, {
+        merchant: simMerchant,
+        amount: parseFloat(simAmount),
+        type: 'Purchase'
+      });
+      toast.success('Simulation Successful! Purchase processed.');
+      setSimAmount('');
+      setShowSimulateModal(false);
+      await loadCardData();
+    } catch (error) {
+      toast.error(error.message || 'Transaction simulation failed');
+    } finally {
+      setSimulating(false);
+    }
+  };
+
   // Reload specific card data when selection changes
   useEffect(() => {
-    if (!selectedCardId) return;
-
-    const loadCardData = async () => {
-      try {
-        setLoading(true);
-        const cardData = await creditCardService.getDashboardData(selectedCardId);
-        setData(cardData);
-        
-        if (cardData) {
-          const txns = await creditCardService.getTransactions(null, selectedCardId);
-          setRecentTransactions(txns.slice(0, 5));
-        }
-      } catch (error) {
-        toast.error('Unable to Load Card Details');
-      } finally {
-        setLoading(false);
-      }
-    };
     loadCardData();
   }, [selectedCardId]);
 
@@ -118,6 +147,16 @@ const CreditCardDashboard = () => {
             </div>
           )}
 
+
+          {cards.length > 0 && (
+            <button
+              onClick={() => setShowSimulateModal(true)}
+              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-lg shadow-sm font-medium flex items-center gap-2 transition-all"
+            >
+              <Receipt className="w-4 h-4" />
+              Simulate Purchase
+            </button>
+          )}
 
           <button
             onClick={() => navigate('/credit-cards/apply')}
@@ -197,6 +236,22 @@ const CreditCardDashboard = () => {
                   <p className="text-sm text-gray-500">Next Due Date</p>
                   <p className="text-lg font-semibold text-gray-800">{new Date(data.nextDueDate).toLocaleDateString()}</p>
                 </div>
+                <div>
+                  <p className="text-sm text-gray-500">Card Holder</p>
+                  <p className="text-lg font-semibold text-gray-800">{data.name || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Mobile Number</p>
+                  <p className="text-lg font-semibold text-gray-800">{data.mobileNumber || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Expiry Date</p>
+                  <p className="text-lg font-semibold text-gray-800">{data.expiryDate || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">CVV Code</p>
+                  <p className="text-lg font-semibold text-gray-800">{data.cvv || 'N/A'}</p>
+                </div>
               </div>
             </div>
 
@@ -275,6 +330,75 @@ const CreditCardDashboard = () => {
           </button>
         </div>
       ) : null}
+
+      {/* Simulate Purchase Modal */}
+      {showSimulateModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex justify-center items-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 relative animate-in fade-in zoom-in duration-200">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-indigo-600" />
+              Simulate Credit Card Purchase
+            </h3>
+            
+            <form onSubmit={handleSimulateTransaction} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Merchant Name
+                </label>
+                <select
+                  value={simMerchant}
+                  onChange={(e) => setSimMerchant(e.target.value)}
+                  className="block w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 px-3 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                >
+                  <option value="Amazon">Amazon (Shopping)</option>
+                  <option value="Swiggy">Swiggy (Food Delivery)</option>
+                  <option value="Uber">Uber (Ride Sharing)</option>
+                  <option value="Zomato">Zomato (Food Delivery)</option>
+                  <option value="MakeMyTrip">MakeMyTrip (Travel Booking)</option>
+                  <option value="Netflix">Netflix (Streaming Subscription)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Amount (₹)
+                </label>
+                <input
+                  type="number"
+                  required
+                  placeholder="e.g. 5000"
+                  value={simAmount}
+                  onChange={(e) => setSimAmount(e.target.value)}
+                  className="block w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 px-3 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Available credit limit is ₹{data?.availableCredit?.toLocaleString('en-IN') || '0'}.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSimulateModal(false);
+                    setSimAmount('');
+                  }}
+                  className="flex-1 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-700 font-semibold text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={simulating}
+                  className="flex-1 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {simulating ? 'Processing...' : 'Simulate Spend'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
