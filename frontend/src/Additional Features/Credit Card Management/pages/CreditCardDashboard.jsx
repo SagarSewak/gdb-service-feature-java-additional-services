@@ -240,6 +240,14 @@ const CreditCardDashboard = () => {
                   <p className="text-lg font-semibold text-gray-800">{data.name || 'N/A'}</p>
                 </div>
                 <div>
+                  <p className="text-sm text-gray-500">Card Number</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {data.cardNumber && data.cardNumber.includes(' ') 
+                      ? data.cardNumber 
+                      : (data.cardNumber ? data.cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ') : 'N/A')}
+                  </p>
+                </div>
+                <div>
                   <p className="text-sm text-gray-500">Mobile Number</p>
                   <p className="text-lg font-semibold text-gray-800">{data.mobileNumber || 'N/A'}</p>
                 </div>
