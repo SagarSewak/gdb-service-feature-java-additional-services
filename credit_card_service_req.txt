@@ -7,3 +7,13 @@ The dropdown of the different credit cards should be before the and occupy the s
 
 All cards should be have a field save nickname for easy recognition 
 change the frontend and credit card service accordingly
+
+
+what i have implemented 
+name of credit card holder 
+credit card number generation based Luhn algorithm
+nickname for all credit cards 
+pin for credit cards 
+simulating payments for credit cards 
+phone number linked to credit card 
+rules for application of silver gold and diamond credit cards based on salary range 

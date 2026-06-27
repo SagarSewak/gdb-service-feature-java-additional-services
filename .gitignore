@@ -42,3 +42,7 @@ Thumbs.db
 *.tmp
 *.bak
 *.swp
+
+# Personal / Local ignores
+Implementation of others/
+
