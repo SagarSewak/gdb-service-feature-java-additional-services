@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { creditCardService } from '../services/mockCreditCardService';
 import { ArrowLeft, IndianRupee, Building2, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSettingsStore } from '../../../store/settingsStore';
 
 const PayCreditCardBill = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const PayCreditCardBill = () => {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const formatCurrency = useSettingsStore(state => state.formatCurrency);
+  const currencySymbol = useSettingsStore(state => state.getCurrencySymbol());
   
   const [formData, setFormData] = useState({
     amount: '',
@@ -125,7 +128,7 @@ const PayCreditCardBill = () => {
           <div className="md:col-span-3 bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
             <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-green-800">Outstanding Bill: ₹0</p>
+              <p className="font-semibold text-green-800">Outstanding Bill: {currencySymbol}0</p>
               <p className="text-sm text-green-700">You have no pending dues. Please spend more money!</p>
             </div>
           </div>
@@ -135,12 +138,12 @@ const PayCreditCardBill = () => {
         <div className="md:col-span-1 space-y-6">
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white shadow-md">
             <p className="text-sm text-gray-300 mb-1">Outstanding Balance</p>
-            <p className="text-3xl font-bold mb-6">₹{data?.outstandingAmount.toLocaleString('en-IN')}</p>
+            <p className="text-3xl font-bold mb-6">{formatCurrency(data?.outstandingAmount)}</p>
             
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm border-b border-gray-700 pb-2">
                 <span className="text-gray-400">Minimum Due</span>
-                <span className="font-semibold">₹{data?.minimumDue.toLocaleString('en-IN')}</span>
+                <span className="font-semibold">{formatCurrency(data?.minimumDue)}</span>
               </div>
               <div className="flex justify-between items-center text-sm border-b border-gray-700 pb-2">
                 <span className="text-gray-400">Due Date</span>
@@ -198,7 +201,7 @@ const PayCreditCardBill = () => {
                       }`}
                     >
                       <p className="text-xs text-gray-500 mb-1">Total Outstanding</p>
-                      <p className="font-semibold text-gray-900">₹{data.outstandingAmount.toLocaleString('en-IN')}</p>
+                      <p className="font-semibold text-gray-900">{formatCurrency(data.outstandingAmount)}</p>
                     </div>
                     <div 
                       onClick={() => { setFormData({ ...formData, amount: data.minimumDue.toString() }); setTouched({ ...touched, amount: true }); }}
@@ -207,11 +210,11 @@ const PayCreditCardBill = () => {
                       }`}
                     >
                       <p className="text-xs text-gray-500 mb-1">Minimum Due</p>
-                      <p className="font-semibold text-gray-900">₹{data.minimumDue.toLocaleString('en-IN')}</p>
+                      <p className="font-semibold text-gray-900">{formatCurrency(data.minimumDue)}</p>
                     </div>
                   </div>
 
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Or enter custom amount (₹) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Or enter custom amount ({currencySymbol}) *</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <IndianRupee className="h-5 w-5 text-gray-400" />
@@ -277,7 +280,7 @@ const PayCreditCardBill = () => {
                         </div>
                         <div className="flex justify-between text-base border-t border-gray-200 pt-2 mt-2">
                           <span className="font-semibold text-gray-900">Payment Amount:</span>
-                          <span className="font-bold text-primary-600">₹{parseFloat(formData.amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                          <span className="font-bold text-primary-600">{formatCurrency(parseFloat(formData.amount))}</span>
                         </div>
                       </div>
                       <p className="text-sm text-gray-500">

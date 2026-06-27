@@ -5,6 +5,7 @@ import CreditCardWidget from '../components/CreditCardWidget';
 import UtilizationBar from '../components/UtilizationBar';
 import { AlertCircle, CreditCard, ArrowRight, CheckCircle, ChevronDown, Receipt, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSettingsStore } from '../../../store/settingsStore';
 
 const CreditCardDashboard = () => {
   const [cards, setCards] = useState([]);
@@ -13,6 +14,8 @@ const CreditCardDashboard = () => {
   const [data, setData] = useState(null);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const formatCurrency = useSettingsStore(state => state.formatCurrency);
+  const currencySymbol = useSettingsStore(state => state.getCurrencySymbol());
   const [filterType, setFilterType] = useState('All');
   
   const [showSimulateModal, setShowSimulateModal] = useState(false);
@@ -186,7 +189,7 @@ const CreditCardDashboard = () => {
           <div>
             <h3 className="text-sm font-medium text-yellow-800">Payment Due Soon</h3>
             <p className="text-sm text-yellow-700 mt-1">
-              Your minimum payment of ₹{data.minimumDue.toLocaleString('en-IN')} is due on {new Date(data.nextDueDate).toLocaleDateString()}. Please pay on time to avoid late fees.
+              Your minimum payment of {formatCurrency(data.minimumDue)} is due on {new Date(data.nextDueDate).toLocaleDateString()}. Please pay on time to avoid late fees.
             </p>
           </div>
         </div>
@@ -196,7 +199,7 @@ const CreditCardDashboard = () => {
         <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-md shadow-sm flex items-start mb-4">
           <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
           <div>
-            <h3 className="text-sm font-medium text-green-800">Outstanding Bill: ₹0</h3>
+            <h3 className="text-sm font-medium text-green-800">Outstanding Bill: {currencySymbol}0</h3>
             <p className="text-sm text-green-700 mt-1">
               You have no pending dues. Please add more money or spend more!
             </p>
@@ -228,15 +231,15 @@ const CreditCardDashboard = () => {
               <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <p className="text-sm text-gray-500">Outstanding Amount</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{data.outstandingAmount.toLocaleString('en-IN')}</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(data.outstandingAmount)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Available Credit</p>
-                  <p className="text-2xl font-bold text-primary-600">₹{data.availableCredit.toLocaleString('en-IN')}</p>
+                  <p className="text-2xl font-bold text-primary-600">{formatCurrency(data.availableCredit)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Minimum Due</p>
-                  <p className="text-lg font-semibold text-gray-800">₹{data.minimumDue.toLocaleString('en-IN')}</p>
+                  <p className="text-lg font-semibold text-gray-800">{formatCurrency(data.minimumDue)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Next Due Date</p>
@@ -314,7 +317,7 @@ const CreditCardDashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className={`text-sm font-bold ${tx.type === 'Payment' ? 'text-green-600' : 'text-gray-900'}`}>
-                          {tx.type === 'Payment' ? '+' : '-'} ₹{tx.amount.toLocaleString('en-IN')}
+                          {tx.type === 'Payment' ? '+' : '-'} {formatCurrency(tx.amount)}
                         </p>
                         <p className="text-xs text-gray-500">{tx.status}</p>
                       </div>
@@ -379,7 +382,7 @@ const CreditCardDashboard = () => {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Amount (₹)
+                  Amount ({currencySymbol})
                 </label>
                 <input
                   type="number"
@@ -390,7 +393,7 @@ const CreditCardDashboard = () => {
                   className="block w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 px-3 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Available credit limit is ₹{data?.availableCredit?.toLocaleString('en-IN') || '0'}.
+                  Available credit limit is {formatCurrency(data?.availableCredit || 0)}.
                 </p>
               </div>
 

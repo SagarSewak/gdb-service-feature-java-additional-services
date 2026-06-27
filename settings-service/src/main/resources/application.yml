@@ -1,0 +1,61 @@
+server:
+  port: ${PORT:8010}
+
+spring:
+  application:
+    name: settings-service
+  output:
+    ansi:
+      enabled: ALWAYS
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/settings_db}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:java}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-on-migrate: false
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.gdb.settings: DEBUG
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+  file:
+    name: logs/settings-service.log
+    max-size: 10MB
+    max-history: 30
+
+springdoc:
+  api-docs:
+    path: /api/v1/api-docs
+  swagger-ui:
+    path: /api/v1/docs
+  packages-to-scan: com.gdb.settings.controller
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

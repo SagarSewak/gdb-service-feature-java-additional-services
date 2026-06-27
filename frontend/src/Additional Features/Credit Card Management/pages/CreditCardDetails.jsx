@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { creditCardService } from '../services/mockCreditCardService';
 import { ArrowLeft, Shield, Clock, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSettingsStore } from '../../../store/settingsStore';
 
 const CreditCardDetails = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const formatCurrency = useSettingsStore(state => state.formatCurrency);
 
   useEffect(() => {
     loadData();
@@ -95,17 +97,17 @@ const CreditCardDetails = () => {
 
             <div>
               <p className="text-sm text-gray-500 mb-1">Total Credit Limit</p>
-              <p className="text-base font-semibold text-gray-900">₹{data.creditLimit.toLocaleString('en-IN')}</p>
+              <p className="text-base font-semibold text-gray-900">{formatCurrency(data.creditLimit)}</p>
             </div>
 
             <div className="bg-green-50 p-4 rounded-lg border border-green-100">
               <p className="text-sm text-green-800 mb-1">Available Credit</p>
-              <p className="text-xl font-bold text-green-700">₹{data.availableCredit.toLocaleString('en-IN')}</p>
+              <p className="text-xl font-bold text-green-700">{formatCurrency(data.availableCredit)}</p>
             </div>
 
             <div className="bg-red-50 p-4 rounded-lg border border-red-100">
               <p className="text-sm text-red-800 mb-1">Outstanding Amount</p>
-              <p className="text-xl font-bold text-red-700">₹{data.outstandingAmount.toLocaleString('en-IN')}</p>
+              <p className="text-xl font-bold text-red-700">{formatCurrency(data.outstandingAmount)}</p>
             </div>
 
             <div className="col-span-1 md:col-span-2 border-t border-gray-100 pt-8">
@@ -117,7 +119,7 @@ const CreditCardDetails = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Minimum Amount Due</p>
-                    <p className="text-lg font-bold text-gray-900">₹{data.minimumDue.toLocaleString('en-IN')}</p>
+                    <p className="text-lg font-bold text-gray-900">{formatCurrency(data.minimumDue)}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">

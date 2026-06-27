@@ -21,6 +21,7 @@ export { usersService } from './usersService';
 export { accountsService } from './accountsService';
 export { transactionsService } from './transactionsService';
 export { paymentGatewayService } from './paymentGatewayService';
+export { settingsService } from './settingsService';
 
 // Re-export API configuration (for advanced usage)
 export { API_BASE_URLS } from './apiConfig';
@@ -33,6 +34,7 @@ import { usersService } from './usersService';
 import { accountsService } from './accountsService';
 import { transactionsService } from './transactionsService';
 import { paymentGatewayService } from './paymentGatewayService';
+import { settingsService } from './settingsService';
 
 export default {
   aadhar: aadharService,
@@ -42,4 +44,5 @@ export default {
   accounts: accountsService,
   transactions: transactionsService,
   paymentGateway: paymentGatewayService,
+  settings: settingsService,
 };

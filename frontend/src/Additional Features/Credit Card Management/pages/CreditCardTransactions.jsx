@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { creditCardService } from '../services/mockCreditCardService';
 import { ArrowLeft, Search, Filter, ArrowUpDown, ArrowUp, ArrowDown, Download, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSettingsStore } from '../../../store/settingsStore';
 
 const CreditCardTransactions = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const formatCurrency = useSettingsStore(state => state.formatCurrency);
   
   // Filters
   const [filters, setFilters] = useState({
@@ -250,7 +252,7 @@ const CreditCardTransactions = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className={`text-sm font-bold ${tx.type === 'Payment' || tx.type === 'Refund' ? 'text-green-600' : 'text-gray-900'}`}>
-                        {tx.type === 'Payment' || tx.type === 'Refund' ? '+' : '-'} ₹{tx.amount.toLocaleString('en-IN')}
+                        {tx.type === 'Payment' || tx.type === 'Refund' ? '+' : '-'} {formatCurrency(tx.amount)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

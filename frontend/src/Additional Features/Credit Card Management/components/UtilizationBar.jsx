@@ -1,8 +1,11 @@
 import React from 'react';
+import { useSettingsStore } from '../../../store/settingsStore';
 
 const UtilizationBar = ({ available, limit }) => {
   const utilizationPercentage = ((limit - available) / limit) * 100;
   const availablePercentage = (available / limit) * 100;
+  const formatCurrency = useSettingsStore(state => state.formatCurrency);
+  const currencySymbol = useSettingsStore(state => state.getCurrencySymbol());
 
   // Visual Indicators based on available credit percentage
   let barColor = 'bg-red-500'; // Default Red (< 20%)
@@ -25,8 +28,8 @@ const UtilizationBar = ({ available, limit }) => {
         ></div>
       </div>
       <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
-        <span>₹0</span>
-        <span>Limit: ₹{limit.toLocaleString('en-IN')}</span>
+        <span>{currencySymbol}0</span>
+        <span>Limit: {formatCurrency(limit)}</span>
       </div>
     </div>
   );

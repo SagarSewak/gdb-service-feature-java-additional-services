@@ -80,7 +80,16 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+import { useEffect } from 'react';
+import { useSettingsStore } from './store/settingsStore';
+
 function App() {
+  const fetchSettings = useSettingsStore(state => state.fetchSettings);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
   return (
     <BrowserRouter>
       <Toaster

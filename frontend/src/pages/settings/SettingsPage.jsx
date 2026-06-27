@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import { settingsService } from '../../services/settingsService';
+import { useSettingsStore } from '../../store/settingsStore';
 import {
   Settings,
   Bell,
@@ -22,9 +24,11 @@ import toast from 'react-hot-toast';
 
 const SettingsPage = () => {
   const { user } = useAuthStore();
+  const updateSettings = useSettingsStore(state => state.updateSettings);
   
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -68,12 +72,82 @@ const SettingsPage = () => {
     compactMode: false,
   });
 
+  // Load settings from backend on component mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const backendSettings = await settingsService.getSettings("default");
+        // Map backend settings to component state
+        if (backendSettings) {
+          setGeneralSettings(prev => ({
+            ...prev,
+            language: backendSettings.language || prev.language,
+            timezone: backendSettings.timezone || prev.timezone,
+            dateFormat: backendSettings.dateFormat || prev.dateFormat,
+            currency: backendSettings.currency || prev.currency,
+          }));
+          
+          setNotificationSettings(prev => ({
+            ...prev,
+            emailNotifications: backendSettings.emailNotifications !== undefined ? backendSettings.emailNotifications : prev.emailNotifications,
+            transactionAlerts: backendSettings.transactionAlerts !== undefined ? backendSettings.transactionAlerts : prev.transactionAlerts,
+            loginAlerts: backendSettings.loginAlerts !== undefined ? backendSettings.loginAlerts : prev.loginAlerts,
+            marketingEmails: backendSettings.marketingEmails !== undefined ? backendSettings.marketingEmails : prev.marketingEmails,
+            weeklyReports: backendSettings.weeklyReports !== undefined ? backendSettings.weeklyReports : prev.weeklyReports,
+            smsAlerts: backendSettings.smsAlerts !== undefined ? backendSettings.smsAlerts : prev.smsAlerts,
+          }));
+
+          setSecuritySettings(prev => ({
+            ...prev,
+            twoFactorEnabled: backendSettings.twoFactorEnabled !== undefined ? backendSettings.twoFactorEnabled : prev.twoFactorEnabled,
+            sessionTimeout: backendSettings.sessionTimeout || prev.sessionTimeout,
+            ipRestriction: backendSettings.ipRestriction !== undefined ? backendSettings.ipRestriction : prev.ipRestriction,
+          }));
+
+          setAppearance(prev => ({
+            ...prev,
+            theme: backendSettings.theme || prev.theme,
+            sidebarCollapsed: backendSettings.sidebarCollapsed !== undefined ? backendSettings.sidebarCollapsed : prev.sidebarCollapsed,
+            compactMode: backendSettings.compactMode !== undefined ? backendSettings.compactMode : prev.compactMode,
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        // Use defaults if backend call fails
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, [user]);
+
   const handleSaveSettings = async () => {
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const settingsToSave = {
+        language: generalSettings.language,
+        timezone: generalSettings.timezone,
+        dateFormat: generalSettings.dateFormat,
+        currency: generalSettings.currency,
+        emailNotifications: notificationSettings.emailNotifications,
+        transactionAlerts: notificationSettings.transactionAlerts,
+        loginAlerts: notificationSettings.loginAlerts,
+        marketingEmails: notificationSettings.marketingEmails,
+        weeklyReports: notificationSettings.weeklyReports,
+        smsAlerts: notificationSettings.smsAlerts,
+        twoFactorEnabled: securitySettings.twoFactorEnabled,
+        sessionTimeout: securitySettings.sessionTimeout,
+        ipRestriction: securitySettings.ipRestriction,
+        theme: appearance.theme,
+        sidebarCollapsed: appearance.sidebarCollapsed,
+        compactMode: appearance.compactMode,
+      };
+
+      await updateSettings(settingsToSave);
       toast.success('Settings saved successfully!');
     } catch (error) {
+      console.error('Error saving settings:', error);
       toast.error('Failed to save settings');
     } finally {
       setLoading(false);

@@ -18,10 +18,12 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSettingsStore } from '../../store/settingsStore';
 
 const AccountsPage = () => {
   const navigate = useNavigate();
   const { hasRole } = useAuthStore();
+  const formatDate = useSettingsStore(state => state.formatDate);
   const { 
     accounts, 
     filters, 
@@ -261,7 +263,7 @@ const AccountsPage = () => {
                   </td>
                   <td className="table-cell text-gray-500">
                     {account.activated_date
-                      ? format(new Date(account.activated_date), 'MMM d, yyyy')
+                      ? formatDate(account.activated_date, false)
                       : '—'}
                   </td>
                   <td className="table-cell text-right">

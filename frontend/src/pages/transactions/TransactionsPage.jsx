@@ -24,12 +24,14 @@ import {
   Loader2,
 } from 'lucide-react';
 import { format, subDays, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { useSettingsStore } from '../../store/settingsStore';
 
 const TransactionsPage = () => {
   const navigate = useNavigate();
   const { hasRole } = useAuthStore();
   const { transactions, isLoading, fetchTransactions } = useTransactionStore();
   const { accounts, fetchAccounts } = useAccountStore();
+  const formatDate = useSettingsStore(state => state.formatDate);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
@@ -155,22 +157,8 @@ const TransactionsPage = () => {
   };
 
   // Safe date formatting helper - converts UTC timestamp to local time
-  const safeFormatDate = (dateValue, formatStr = 'MMM d, yyyy • h:mm a') => {
-    if (!dateValue) return 'N/A';
-    try {
-      // Backend returns UTC timestamps without 'Z' suffix
-      // Add 'Z' to indicate UTC, so JavaScript converts to local time correctly
-      let dateStr = String(dateValue);
-      if (!dateStr.endsWith('Z') && !dateStr.includes('+') && !dateStr.includes('-', 10)) {
-        // Replace space with 'T' for ISO format and add 'Z' for UTC
-        dateStr = dateStr.replace(' ', 'T') + 'Z';
-      }
-      const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return 'N/A';
-      return format(date, formatStr);
-    } catch {
-      return 'N/A';
-    }
+  const safeFormatDate = (dateValue, formatStr) => {
+    return formatDate(dateValue);
   };
 
   const getTransactionIcon = (type) => {

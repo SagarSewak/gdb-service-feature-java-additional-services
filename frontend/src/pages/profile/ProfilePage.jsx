@@ -17,10 +17,12 @@ import {
   Building,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSettingsStore } from '../../store/settingsStore';
 import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
   const { user, updateProfile } = useAuthStore();
+  const formatDate = useSettingsStore(state => state.formatDate);
   
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -327,8 +329,8 @@ const ProfilePage = () => {
               <p className="font-medium text-gray-900 flex items-center gap-1">
                 <Clock className="w-4 h-4 text-gray-400" />
                 {user?.last_login 
-                  ? format(new Date(user.last_login), 'MMM d, yyyy h:mm a')
-                  : format(new Date(), 'MMM d, yyyy h:mm a')
+                  ? formatDate(user.last_login)
+                  : formatDate(new Date())
                 }
               </p>
             </div>

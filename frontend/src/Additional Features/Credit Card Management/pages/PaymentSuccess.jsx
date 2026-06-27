@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircle, ArrowRight, FileText } from 'lucide-react';
+import { useSettingsStore } from '../../../store/settingsStore';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { transactionId, amount, account } = location.state || {};
+  const formatCurrency = useSettingsStore(state => state.formatCurrency);
 
   return (
     <div className="max-w-2xl mx-auto mt-12">
@@ -25,7 +27,7 @@ const PaymentSuccess = () => {
             </div>
             <div className="flex justify-between items-center border-b border-gray-200 pb-3">
               <span className="text-sm text-gray-500">Paid Amount</span>
-              <span className="text-sm font-bold text-gray-900">₹{parseFloat(amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+              <span className="text-sm font-bold text-gray-900">{formatCurrency(parseFloat(amount))}</span>
             </div>
             <div className="flex justify-between items-center pb-1">
               <span className="text-sm text-gray-500">Paid From</span>

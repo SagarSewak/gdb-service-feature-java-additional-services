@@ -24,6 +24,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSettingsStore } from '../../store/settingsStore';
 import {
   AreaChart,
   Area,
@@ -45,6 +46,8 @@ const DashboardPage = () => {
   const { accounts, fetchAccounts, getStatistics: getAccountStats } = useAccountStore();
   const { transactions, fetchTransactions, getStatistics: getTransactionStats } = useTransactionStore();
   const { users, fetchUsers, getStatistics: getUserStats } = useUserStore();
+  const formatDateFromStore = useSettingsStore(state => state.formatDate);
+  const currencySymbol = useSettingsStore(state => state.getCurrencySymbol());
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
@@ -328,22 +331,8 @@ const DashboardPage = () => {
   };
 
   // Safe date formatting helper - converts UTC timestamp to local time
-  const formatDate = (dateValue, formatStr = 'MMM d, h:mm a') => {
-    if (!dateValue) return 'N/A';
-    try {
-      // Backend returns UTC timestamps without 'Z' suffix
-      // Add 'Z' to indicate UTC, so JavaScript converts to local time correctly
-      let dateStr = String(dateValue);
-      if (!dateStr.endsWith('Z') && !dateStr.includes('+') && !dateStr.includes('-', 10)) {
-        // Replace space with 'T' for ISO format and add 'Z' for UTC
-        dateStr = dateStr.replace(' ', 'T') + 'Z';
-      }
-      const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return 'N/A';
-      return format(date, formatStr);
-    } catch {
-      return 'N/A';
-    }
+  const formatDate = (dateValue, formatStr) => {
+    return formatDateFromStore(dateValue);
   };
 
   if (loading) {
@@ -535,7 +524,7 @@ const DashboardPage = () => {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                <YAxis stroke="#9ca3af" fontSize={12} tickFormatter={(v) => `₹${v/1000}k`} />
+                <YAxis stroke="#9ca3af" fontSize={12} tickFormatter={(v) => `${currencySymbol}${v/1000}k`} />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'white', 
@@ -543,7 +532,7 @@ const DashboardPage = () => {
                     borderRadius: '8px',
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                   }}
-                  formatter={(value) => [`₹${value.toLocaleString()}`, '']}
+                  formatter={(value) => [`${currencySymbol}${value.toLocaleString()}`, '']}
                 />
                 <Area type="monotone" dataKey="deposits" stroke="#10b981" fillOpacity={1} fill="url(#colorDeposits)" strokeWidth={2} />
                 <Area type="monotone" dataKey="withdrawals" stroke="#ef4444" fillOpacity={1} fill="url(#colorWithdrawals)" strokeWidth={2} />

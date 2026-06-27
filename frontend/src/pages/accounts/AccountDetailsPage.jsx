@@ -25,6 +25,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSettingsStore } from '../../store/settingsStore';
 import toast from 'react-hot-toast';
 
 const AccountDetailsPage = () => {
@@ -33,6 +34,7 @@ const AccountDetailsPage = () => {
   const { hasRole } = useAuthStore();
   const { getAccountByNumber, activateAccount, deactivateAccount } = useAccountStore();
   const { getTransactionsForAccount } = useTransactionStore();
+  const formatDate = useSettingsStore(state => state.formatDate);
 
   const [account, setAccount] = useState(null);
   const [transactions, setTransactions] = useState([]);
@@ -198,7 +200,7 @@ const AccountDetailsPage = () => {
             <p className="text-primary-100 text-sm font-medium">Available Balance</p>
             <p className="text-4xl font-bold mt-1">{formatCurrency(account.balance)}</p>
             <p className="text-primary-200 text-sm mt-2">
-              Last updated: {format(new Date(), 'MMM d, yyyy h:mm a')}
+              Last updated: {formatDate(new Date())}
             </p>
           </div>
           <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -298,7 +300,7 @@ const AccountDetailsPage = () => {
               <div className="flex justify-between py-2">
                 <span className="text-gray-500">Opened On</span>
                 <span className="font-medium text-gray-900">
-                  {account.activated_date ? format(new Date(account.activated_date), 'MMM d, yyyy') : '-'}
+                  {account.activated_date ? formatDate(account.activated_date, false) : '-'}
                 </span>
               </div>
             </div>
@@ -325,7 +327,7 @@ const AccountDetailsPage = () => {
                   <div className="flex justify-between py-2 border-b border-gray-100">
                     <span className="text-gray-500">Date of Birth</span>
                     <span className="font-medium text-gray-900">
-                      {account.date_of_birth ? format(new Date(account.date_of_birth), 'MMM d, yyyy') : '-'}
+                      {account.date_of_birth ? formatDate(account.date_of_birth, false) : '-'}
                     </span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100">
@@ -401,7 +403,7 @@ const AccountDetailsPage = () => {
                           )}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {txn.description} • {format(new Date(txn.created_at), 'MMM d, h:mm a')}
+                          {txn.description} • {formatDate(txn.created_at)}
                         </p>
                       </div>
                     </div>

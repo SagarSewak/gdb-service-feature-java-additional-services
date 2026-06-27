@@ -22,11 +22,13 @@ import {
   User,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSettingsStore } from '../../store/settingsStore';
 import toast from 'react-hot-toast';
 
 const UsersPage = () => {
   const navigate = useNavigate();
   const { hasRole, user: currentUser } = useAuthStore();
+  const formatDate = useSettingsStore(state => state.formatDate);
   const dropdownRef = useRef(null);
   const { users, loading, fetchUsers, activateUser, deactivateUser } = useUserStore();
 
@@ -332,7 +334,7 @@ const UsersPage = () => {
                       {user.created_at ? (
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {format(new Date(user.created_at), 'MMM d, yyyy')}
+                          {formatDate(user.created_at, false)}
                         </div>
                       ) : (
                         <span className="text-gray-400">-</span>
