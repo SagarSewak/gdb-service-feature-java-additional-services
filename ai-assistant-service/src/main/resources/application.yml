@@ -1,0 +1,22 @@
+server:
+  port: 8013
+
+spring:
+  application:
+    name: ai-assistant-service
+
+eureka:
+  client:
+    enabled: false
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+app:
+  claude:
+    api-key: ${ANTHROPIC_API_KEY:}
+    api-url: https://api.anthropic.com/v1/messages
+    model: claude-haiku-4-5-20251001
+
+spring.cloud.compatibility-verifier.enabled: false

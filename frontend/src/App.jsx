@@ -56,6 +56,9 @@ import LoansPage from './pages/loans/LoansPage';
 import LoanApplicationPage from './pages/loans/LoanApplicationPage';
 import LoanDetailsPage from './pages/loans/LoanDetailsPage';
 
+// AI Assistant
+import AiChatWidget from './components/ai/AiChatWidget';
+
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user, checkTokenExpiry } = useAuthStore();
@@ -117,6 +120,7 @@ function App() {
           },
         }}
       />
+      <AiChatWidget />
       
       <Routes>
         {/* Public Routes */}

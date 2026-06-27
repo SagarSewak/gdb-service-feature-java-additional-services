@@ -20,6 +20,7 @@ export const API_BASE_URLS = {
   creditCards: import.meta.env.VITE_CREDIT_CARDS_SERVICE_URL,
   settings: import.meta.env.VITE_SETTINGS_SERVICE_URL,
   loan: import.meta.env.VITE_LOAN_SERVICE_URL || 'http://localhost:8012',
+  aiAssistant: import.meta.env.VITE_AI_ASSISTANT_URL || 'http://localhost:8013',
 };
 
 // Create axios instances for each service
@@ -103,6 +104,14 @@ export const loanApi = axios.create({
   },
 });
 
+export const aiAssistantApi = axios.create({
+  baseURL: API_BASE_URLS.aiAssistant,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 // Request interceptor to add auth token
 const addAuthToken = (config) => {
   const token = localStorage.getItem('token');
@@ -113,7 +122,7 @@ const addAuthToken = (config) => {
 };
 
 // Add interceptors to protected services
-[authApi, usersApi, accountsApi, transactionsApi, paymentGatewayApi, creditCardsApi, settingsApi, loanApi].forEach((api) => {
+[authApi, usersApi, accountsApi, transactionsApi, paymentGatewayApi, creditCardsApi, settingsApi, loanApi, aiAssistantApi].forEach((api) => {
   api.interceptors.request.use(addAuthToken, (error) => Promise.reject(error));
 });
 
@@ -138,6 +147,6 @@ const handleResponseError = (error) => {
   return Promise.reject(error);
 };
 
-[authApi, usersApi, accountsApi, transactionsApi, paymentGatewayApi, creditCardsApi, settingsApi, loanApi].forEach((api) => {
+[authApi, usersApi, accountsApi, transactionsApi, paymentGatewayApi, creditCardsApi, settingsApi, loanApi, aiAssistantApi].forEach((api) => {
   api.interceptors.response.use((response) => response, handleResponseError);
 });
