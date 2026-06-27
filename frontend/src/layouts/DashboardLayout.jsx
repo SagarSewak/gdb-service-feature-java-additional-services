@@ -167,6 +167,12 @@ const DashboardLayout = () => {
         roles: ['ADMIN', 'TELLER', 'MANAGER', 'CUSTOMER'],
       },
       {
+        name: 'Loans',
+        path: '/loans',
+        icon: Building2,
+        roles: ['ADMIN', 'TELLER', 'MANAGER'],
+      },
+      {
         name: 'Settings',
         path: '/settings',
         icon: Settings,

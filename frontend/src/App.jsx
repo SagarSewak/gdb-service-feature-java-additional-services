@@ -51,6 +51,11 @@ import ApplicationSuccess from './Additional Features/Credit Card Management/pag
 // Additional Features: Bank Statement Management
 import StatementPreview from './Additional Features/Bank Statement Management/pages/StatementPreview';
 
+// Loans
+import LoansPage from './pages/loans/LoansPage';
+import LoanApplicationPage from './pages/loans/LoanApplicationPage';
+import LoanDetailsPage from './pages/loans/LoanDetailsPage';
+
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user, checkTokenExpiry } = useAuthStore();
@@ -259,6 +264,11 @@ function App() {
 
           {/* Bank Statements (Additional Feature) */}
           <Route path="/statements" element={<StatementPreview />} />
+
+          {/* Loans */}
+          <Route path="/loans" element={<LoansPage />} />
+          <Route path="/loans/apply" element={<LoanApplicationPage />} />
+          <Route path="/loans/:id" element={<LoanDetailsPage />} />
         </Route>
 
         {/* Redirect root to login (PublicRoute will redirect to dashboard if authenticated) */}

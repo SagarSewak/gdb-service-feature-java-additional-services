@@ -1,0 +1,33 @@
+server:
+  port: 8012
+
+spring:
+  application:
+    name: loan-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/loan_db}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:saksham12}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+app:
+  services:
+    auth-url: ${APP_SERVICES_AUTH_URL:http://localhost:8004}
+
+spring.cloud.compatibility-verifier.enabled: false
