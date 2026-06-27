@@ -79,6 +79,10 @@ public class TransactionLogServiceImpl implements TransactionLogService {
                 .accountNumber(log.getAccountNumber())
                 .amount(log.getAmount())
                 .transactionType(log.getTransactionType())
+                .description(log.getDescription())
+                .referenceId(log.getReferenceId())
+                .mode(log.getMode())
+                .status(log.getStatus())
                 .createdAt(log.getCreatedAt())
                 .build();
     }

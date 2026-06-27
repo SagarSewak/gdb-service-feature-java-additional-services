@@ -42,8 +42,8 @@ public class SecurityUtils {
             throw new RuntimeException("ACCESS_DENIED");
 
         String role = context.getRole();
-        // Only Manager, Admin and Teller can view transaction logs
-        if (!ROLE_ADMIN.equals(role) && !ROLE_MANAGER.equals(role) && !ROLE_TELLER.equals(role)) {
+        // Only Manager, Admin, Teller and CUSTOMER can view transaction logs
+        if (!ROLE_ADMIN.equals(role) && !ROLE_MANAGER.equals(role) && !ROLE_TELLER.equals(role) && !"CUSTOMER".equals(role)) {
             throw new RuntimeException("ACCESS_DENIED");
         }
     }

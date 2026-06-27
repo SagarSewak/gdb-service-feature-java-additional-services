@@ -89,8 +89,8 @@ const enrichStatement = async (dto) => {
     }
   }
 
-  // 5. Build UI transaction objects for period logs
-  const transactions = periodLogs
+  // 5. Build UI transaction objects for all logs (no date filtering)
+  const transactions = rawLogs
     .sort(
       (a, b) =>
         new Date(b.created_at || b.timestamp || b.date) -

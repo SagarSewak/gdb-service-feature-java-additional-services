@@ -43,11 +43,10 @@ const StatementPreview = () => {
         const accs = await statementService.getEligibleAccounts();
         setAccounts(accs);
         if (accs.length > 0) {
-          // Default to last 30 days for the first account
           const today = new Date();
           const thirtyDaysAgo = new Date();
           thirtyDaysAgo.setDate(today.getDate() - 30);
-
+          
           setFilters({
             accountId: accs[0].id,
             fromDate: thirtyDaysAgo.toISOString().split('T')[0],
@@ -69,7 +68,7 @@ const StatementPreview = () => {
     today.setHours(0, 0, 0, 0);
 
     if (!filters.accountId) errors.accountId = 'Required';
-
+    
     if (!filters.fromDate) errors.fromDate = 'Required';
     else if (new Date(filters.fromDate) > today) errors.fromDate = 'No future dates';
 
@@ -121,6 +120,10 @@ const StatementPreview = () => {
   };
 
   const handlePrint = () => window.print();
+
+  const toggleSort = () => {
+    setSortOrder(p => p === 'desc' ? 'asc' : 'desc');
+  };
 
   if (initialLoad) {
     return (
@@ -215,7 +218,7 @@ const StatementPreview = () => {
                 onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
               />
             </div>
-            {filterErrors.fromDate && <p className="text-xs text-red-500 mt-1">{filterErrors.fromDate}</p>}
+            {filterErrors.fromDate && <p className="text-xs text-red-500 mt-1 absolute">{filterErrors.fromDate}</p>}
           </div>
 
           <div className="w-full md:w-1/4">
@@ -232,7 +235,7 @@ const StatementPreview = () => {
                 onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
               />
             </div>
-            {filterErrors.toDate && <p className="text-xs text-red-500 mt-1">{filterErrors.toDate}</p>}
+            {filterErrors.toDate && <p className="text-xs text-red-500 mt-1 absolute">{filterErrors.toDate}</p>}
           </div>
 
           <div className="w-full md:w-auto md:ml-auto">
