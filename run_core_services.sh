@@ -12,6 +12,7 @@ SERVICES=(
   "credit-cards-service"
   "loan-service"
   "ai-assistant-service"
+  "bank-statements-service"
 )
 
 LOG_DIR="logs"

@@ -1,30 +1,39 @@
 package com.gdb.bankstatements.controller;
 
 import com.gdb.bankstatements.dto.StatementDto;
+import com.gdb.bankstatements.service.StatementService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/statements")
+@RequiredArgsConstructor
 public class StatementController {
 
-    // Students: Inject your StatementService here
+    private final StatementService statementService;
 
     @PostMapping("/generate")
-    public ResponseEntity<StatementDto> generateStatement(@RequestBody StatementDto request) {
-        // Students: Implement background generation logic
-        return ResponseEntity.status(501).build();
+    public ResponseEntity<StatementDto> generateStatement(
+            @RequestBody StatementDto request) {
+
+        return ResponseEntity.ok(
+                statementService.generateStatement(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StatementDto> getStatementStatus(@PathVariable String id) {
-        // Students: Implement logic to check statement status
-        return ResponseEntity.status(501).build();
+    public ResponseEntity<StatementDto> getStatementStatus(
+            @PathVariable String id) {
+
+        return ResponseEntity.ok(
+                statementService.getStatementStatus(id));
     }
 
     @GetMapping("/{id}/download")
-    public ResponseEntity<?> downloadStatement(@PathVariable String id) {
-        // Students: Implement logic to download the file
-        return ResponseEntity.status(501).build();
+    public ResponseEntity<String> downloadStatement(
+            @PathVariable String id) {
+
+        return ResponseEntity.ok(
+                statementService.getDownloadUrl(id));
     }
 }
